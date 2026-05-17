@@ -26,3 +26,12 @@ cmake -S . -B build
 
 # Сборка
 cmake --build build
+
+## Тестирование
+
+Проект использует Google Test для модульного тестирования. Тесты охватывают все основные классы: "FileHeader", "FileHandler", "CryptoEngine", "FileEncryptor"
+
+### Запуск тестов
+
+# Запуск всех тестов через CTest
+ctest --test-dir build --output-on-failure

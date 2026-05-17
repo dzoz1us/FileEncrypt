@@ -1,11 +1,9 @@
 #include "FileHandler.h"
 #include <fstream>
-#include <stdexcept>
 
 struct FileHandler::Impl {
     std::fstream file;
     uint64_t fileSizeBytes = 0;
-    bool writeMode = false;
 };
 
 FileHandler::FileHandler() : pImpl(new Impl) {}
@@ -14,8 +12,6 @@ FileHandler::~FileHandler() { close(); delete pImpl; }
 bool FileHandler::openRead(const std::string& path) {
     pImpl->file.open(path, std::ios::in | std::ios::binary);
     if (!pImpl->file.is_open()) return false;
-    pImpl->writeMode = false;
-    // Определяем размер
     pImpl->file.seekg(0, std::ios::end);
     pImpl->fileSizeBytes = static_cast<uint64_t>(pImpl->file.tellg());
     pImpl->file.seekg(0, std::ios::beg);
@@ -24,7 +20,6 @@ bool FileHandler::openRead(const std::string& path) {
 
 bool FileHandler::openWrite(const std::string& path) {
     pImpl->file.open(path, std::ios::out | std::ios::binary);
-    pImpl->writeMode = true;
     return pImpl->file.is_open();
 }
 
@@ -51,6 +46,5 @@ bool FileHandler::isOpen() const {
 }
 
 void FileHandler::close() {
-    if (pImpl->file.is_open())
-        pImpl->file.close();
+    if (pImpl->file.is_open()) pImpl->file.close();
 }
