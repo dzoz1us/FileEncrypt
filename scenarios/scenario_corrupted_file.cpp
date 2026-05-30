@@ -25,7 +25,6 @@ int main() {
     std::cout << "  SCENARIO 3: Corrupted File\n";
     std::cout << "========================================\n\n";
 
-    // Шаг 1: Создаём и шифруем файл
     std::cout << "[1/4] Creating and encrypting test file...\n";
     std::string originalContent = "Important document.\nSignature: John Doe.\n";
     std::vector<uint8_t> originalData(originalContent.begin(), originalContent.end());
@@ -38,7 +37,6 @@ int main() {
     }
     std::cout << "      Encryption successful.\n\n";
 
-    // Шаг 2: Повреждаем зашифрованный файл
     std::cout << "[2/4] Corrupting the encrypted file...\n";
     auto encryptedData = readFile("scenario3_encrypted.enc");
     if (encryptedData.size() < 50) {
@@ -50,25 +48,20 @@ int main() {
     writeFile("scenario3_corrupted.enc", encryptedData);
     std::cout << "      Flipped byte at position " << pos << " (in ciphertext).\n\n";
 
-    // Шаг 3: Пытаемся расшифровать повреждённый файл
     std::cout << "[3/4] Attempting to decrypt the CORRUPTED file...\n";
     bool decryptOk = fe.decrypt("scenario3_corrupted.enc",
                                 "scenario3_decrypted.txt",
                                 "SecurePassword");
 
-    // Шаг 4: Проверяем результат
     std::cout << "\n[4/4] Checking result...\n";
 
     if (!decryptOk) {
-        // Расшифровка явно провалилась (finalize вернул false)
         std::cout << "      Decryption FAILED (as expected).\n";
         std::cout << "      Program detected corrupted data.\n\n";
         std::cout << "========================================\n";
         std::cout << "  SCENARIO 3: PASSED\n";
         std::cout << "========================================\n";
     } else {
-        // finalize вернул true — но данные могли быть мусором.
-        // Сравним с оригиналом.
         auto decryptedData = readFile("scenario3_decrypted.txt");
         if (decryptedData == originalData) {
             std::cerr << "      Decryption SUCCEEDED and data MATCHES original.\n";
@@ -89,7 +82,6 @@ int main() {
             std::cout << "========================================\n";
             std::cout << "  SCENARIO 3: PASSED\n";
             std::cout << "========================================\n";
-            std::cout << "  File was processed but data is garbage.\n";
         }
     }
 

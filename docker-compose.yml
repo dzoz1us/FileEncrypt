@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # Просто запуск программы (интерактивный режим)
+  fileencrypt:
+    build: .
+    image: fileencrypt:latest
+    stdin_open: true   # нужно для интерактивного режима
+    tty: true          # нужно для интерактивного режима
+    volumes:
+      - ./data:/data   # монтируем папку для файлов
+    working_dir: /data
+
+  # Запуск тестов
+  test:
+    build:
+      context: .
+      target: tester   # останавливаемся на этапе тестирования
+    image: fileencrypt:test
+
+  # Запуск сценариев
+  scenarios:
+    build:
+      context: .
+    image: fileencrypt:latest
+    entrypoint: /bin/bash
+    command: |
+      -c "
+      echo 'Running scenarios...' &&
+      ./build/scenario_encrypt_decrypt &&
+      ./build/scenario_wrong_password &&
+      ./build/scenario_corrupted_file
+      "

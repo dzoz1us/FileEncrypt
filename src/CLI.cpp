@@ -2,6 +2,7 @@
 #include "FileEncryptor.h"
 #include <iostream>
 #include <limits>
+#include <cstring>
 
 void CLI::runInteractive() {
     while (true) {
@@ -56,7 +57,79 @@ void CLI::runInteractive() {
     }
 }
 
-void CLI::runBatch(int argc, char* argv[]) {
-    std::cout << "Batch mode not implemented yet.\n";
-    std::cout << "Usage: fileencrypt -e|-d <file> -p <password> [-o <output>]\n";
+bool CLI::runBatch(int argc, char* argv[]) {
+    std::string mode, input, output, password;
+
+    for (int i = 1; i < argc; i++) {
+        if (std::strcmp(argv[i], "-e") == 0 || std::strcmp(argv[i], "--encrypt") == 0) {
+            mode = "encrypt";
+            if (i + 1 < argc) input = argv[++i];
+        }
+        else if (std::strcmp(argv[i], "-d") == 0 || std::strcmp(argv[i], "--decrypt") == 0) {
+            mode = "decrypt";
+            if (i + 1 < argc) input = argv[++i];
+        }
+        else if (std::strcmp(argv[i], "-p") == 0 || std::strcmp(argv[i], "--password") == 0) {
+            if (i + 1 < argc) password = argv[++i];
+        }
+        else if (std::strcmp(argv[i], "-o") == 0 || std::strcmp(argv[i], "--output") == 0) {
+            if (i + 1 < argc) output = argv[++i];
+        }
+        else if (std::strcmp(argv[i], "-h") == 0 || std::strcmp(argv[i], "--help") == 0) {
+            std::cout << "Usage: fileencrypt [options]\n\n";
+            std::cout << "Interactive mode (no arguments):\n";
+            std::cout << "  fileencrypt\n\n";
+            std::cout << "Batch mode:\n";
+            std::cout << "  fileencrypt -e <file> -p <password> [-o <output>]\n";
+            std::cout << "  fileencrypt -d <file> -p <password> [-o <output>]\n\n";
+            std::cout << "Options:\n";
+            std::cout << "  -e, --encrypt <file>   Encrypt specified file\n";
+            std::cout << "  -d, --decrypt <file>   Decrypt specified file\n";
+            std::cout << "  -p, --password <pwd>   Password for encryption/decryption\n";
+            std::cout << "  -o, --output <file>    Output file path (optional)\n";
+            std::cout << "  -h, --help             Show this help\n";
+            return true;
+        }
+    }
+
+    if (mode.empty()) {
+        std::cerr << "Error: No mode specified. Use -e or -d.\n";
+        std::cerr << "Use -h for help.\n";
+        return false;
+    }
+
+    if (input.empty()) {
+        std::cerr << "Error: No input file specified.\n";
+        return false;
+    }
+
+    if (password.empty()) {
+        std::cerr << "Error: No password specified. Use -p.\n";
+        return false;
+    }
+
+    // Если output не указан, формируем автоматически
+    if (output.empty()) {
+        if (mode == "encrypt") {
+            output = input + ".enc";
+        } else {
+            // Убираем .enc, если есть, иначе добавляем .dec
+            if (input.size() > 4 && input.substr(input.size() - 4) == ".enc") {
+                output = input.substr(0, input.size() - 4) + ".dec";
+            } else {
+                output = input + ".dec";
+            }
+        }
+    }
+
+    FileEncryptor fe;
+    bool ok = false;
+
+    if (mode == "encrypt") {
+        ok = fe.encrypt(input, output, password);
+    } else {
+        ok = fe.decrypt(input, output, password);
+    }
+
+    return ok;
 }

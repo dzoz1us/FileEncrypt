@@ -6,10 +6,12 @@ int main(int argc, char* argv[]) {
     std::cout << "Build: " << __DATE__ << " " << __TIME__ << "\n";
 
     CLI cli;
-    if (argc > 1)
-        cli.runBatch(argc, argv);
-    else
-        cli.runInteractive();
 
-    return 0;
+    if (argc > 1) {
+        bool ok = cli.runBatch(argc, argv);
+        return ok ? 0 : 1;
+    } else {
+        cli.runInteractive();
+        return 0;
+    }
 }

@@ -1,7 +1,8 @@
 #pragma once
+#include <string>
 
 class CLI {
 public:
     void runInteractive();
-    void runBatch(int argc, char* argv[]);
+    bool runBatch(int argc, char* argv[]);
 };
