@@ -45,7 +45,7 @@ ctest --test-dir build --output-on-failure
 1. .\build\scenario_corrupted_file.exe
 2. .\build\scenario_encrypt_decrypt.exe
 3. .\build\scenario_wrong_password.exe
-
+```
 
 ### Docker
 
