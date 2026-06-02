@@ -56,7 +56,7 @@ ctest --test-dir build --output-on-failure
 # 2. Возможность запуска тестов внутри контейнера
 В Dockerfile есть этап tester, который запускает ctest и три сценария
 При сборке тесты проходят, иначе сборка бы упала
-docker build --target tester -t fileencrypt:test . 
+docker build --target tester -t fileencrypt:test --no-cache --progress=plain .
 
 # 3. Передача аргументов командой строки
 CLI::runBatch() обрабатывает аргументы: -e, -d, -p, -o, -h
@@ -90,3 +90,7 @@ echo "Secret: 12345" > data/demo.txt
 docker run --rm -v ${PWD}/data:/data -w /data fileencrypt -e demo.txt -p secret -o demo.enc
 Расшифровка:
 docker run --rm -v ${PWD}/data:/data -w /data fileencrypt -d demo.enc -p secret -o demo_dec.txt
+
+
+docker run --rm --entrypoint cat fileencrypt /etc/os-release
+Вывод покажет паспорт операционной системы. Он доказывает, что внутри контейнера - Ubuntu Linux версии 22.04, а не Windows. Программа запускается там, и сборка проходит там.
